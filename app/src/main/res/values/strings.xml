@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pods</string>
+
+    <string name="searching">Recherche de vos écouteurs…</string>
+    <string name="searching_hint">Connectez vos AirPods ou ouvrez le boîtier près du téléphone.</string>
+
+    <string name="permission_title">Appareils à proximité</string>
+    <string name="permission_rationale">Pods a besoin de cet accès pour lire la batterie de vos AirPods. Aucune donnée ne quitte votre téléphone.</string>
+    <string name="permission_grant">Autoriser</string>
+
+    <string name="connected">Connecté</string>
+    <string name="updated_now">à l\'instant</string>
+    <string name="updated_seconds">il y a %1$d s</string>
+    <string name="updated_minutes">il y a %1$d min</string>
+    <string name="live">en direct</string>
+    <string name="noise_control">Contrôle du bruit</string>
+    <string name="noise_off">Désactivé</string>
+    <string name="noise_transparency">Transparence</string>
+    <string name="noise_adaptive">Adaptatif</string>
+    <string name="noise_anc">Réduction du bruit</string>
+    <string name="precision_note">Les AirPods donnent leur batterie par paliers de 10 %.</string>
+
+    <string name="left">Gauche</string>
+    <string name="right">Droite</string>
+    <string name="case_label">Boîtier</string>
+    <string name="battery">Batterie</string>
+    <string name="percent">%1$d %%</string>
+    <string name="charging">En charge</string>
+    <string name="in_ear">Porté</string>
+    <string name="absent">Absent</string>
+
+    <string name="battery_left">G %1$d %%</string>
+    <string name="battery_right">D %1$d %%</string>
+    <string name="battery_case">Boîtier %1$d %%</string>
+    <string name="battery_single">Batterie %1$d %%</string>
+
+    <string name="notification_channel">État des écouteurs</string>
+    <string name="notification_waiting">Connecté · lecture de la batterie…</string>
+    <string name="notification_connection_channel">Connexion des écouteurs</string>
+    <string name="notification_connected">%1$s connectés</string>
+
+    <string name="popup_open_app">Ouvrir Pods</string>
+    <string name="popup_close">Fermer</string>
+</resources>
