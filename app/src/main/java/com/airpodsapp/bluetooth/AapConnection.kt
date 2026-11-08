@@ -31,6 +31,7 @@ class AapConnection(
 ) {
     @Volatile private var socket: BluetoothSocket? = null
     @Volatile private var closed = false
+    @Volatile private var answered = false
 
     fun open() {
         thread(name = "aap-reader", isDaemon = true) { run() }
@@ -54,12 +55,10 @@ class AapConnection(
             socket = s
             s.connect()
             Log.i(TAG, "AAP connected")
-            // Same opening sequence as LibrePods: handshake, feature flags, notifications.
-            send(Aap.handshake)
-            send(Aap.featureFlags)
-            send(Aap.requestNotifications)
+            sendOpeningPackets()
             opened = true
             onOpened()
+            resendUntilAnswered()
 
             val buffer = ByteArray(1024)
             while (!closed) {
@@ -70,7 +69,10 @@ class AapConnection(
                 if (Log.isLoggable(TAG, Log.DEBUG)) {
                     Log.d(TAG, "rx " + packet.joinToString(" ") { "%02X".format(it) })
                 }
-                AapParser.parse(packet)?.let(onMessage)
+                AapParser.parse(packet)?.let { message ->
+                    if (message is AapMessage.Battery || message is AapMessage.EarDetection) answered = true
+                    onMessage(message)
+                }
             }
         } catch (e: Exception) {
             if (!closed) Log.w(TAG, "AAP link failed: ${e.message}")
@@ -78,6 +80,28 @@ class AapConnection(
             val requested = closed
             close()
             if (!requested) onClosed(opened)
+        }
+    }
+
+    /** Same opening sequence as LibrePods: handshake, feature flags, notifications. */
+    private fun sendOpeningPackets() {
+        send(Aap.handshake)
+        send(Aap.featureFlags)
+        send(Aap.requestNotifications)
+    }
+
+    /**
+     * AirPods that have only just connected can accept the channel but ignore the first
+     * packets, which leaves the link silent. Repeat the opening until they answer.
+     */
+    private fun resendUntilAnswered() {
+        thread(name = "aap-opener", isDaemon = true) {
+            for (delayMs in RESEND_DELAYS_MS) {
+                Thread.sleep(delayMs)
+                if (closed || answered) return@thread
+                Log.i(TAG, "No answer yet, resending opening packets")
+                sendOpeningPackets()
+            }
         }
     }
 
@@ -125,5 +149,6 @@ class AapConnection(
 
     private companion object {
         const val TAG = "AapConnection"
+        val RESEND_DELAYS_MS = longArrayOf(500, 1_000, 2_000, 5_000, 10_000)
     }
 }

@@ -179,6 +179,7 @@ class PodsService : Service() {
     }
 
     override fun onDestroy() {
+        media.releaseWithoutResuming()
         aap?.close()
         aap = null
         scanner.stop()

@@ -39,6 +39,18 @@ Captures d'écran de l'interface sans appareil (Robolectric + Roborazzi), dans `
 ./gradlew :app:recordRoborazziDebug
 ```
 
+### Version signée
+
+Sans clé, `./gradlew :app:assembleRelease` produit un APK non signé. Pour le signer, créez à la racine
+un fichier `keystore.properties` (ignoré par Git) :
+
+```properties
+storeFile=/chemin/vers/votre-cle.jks
+storePassword=...
+keyAlias=...
+keyPassword=...
+```
+
 ## Feuille de route
 
 1. ✅ Analyse d'OpenPods et portage du décodeur BLE

@@ -1,9 +1,17 @@
+import java.util.Properties
+
 // AGP 9 compiles Kotlin itself (built-in Kotlin): no kotlin-android plugin needed.
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     // Screenshot tests on the JVM (Robolectric): ./gradlew :app:recordRoborazziDebug
     alias(libs.plugins.roborazzi)
+}
+
+// Release signing key, kept out of the repository (see README). Without this file,
+// release builds are simply left unsigned.
+val keystoreProperties = Properties().apply {
+    rootProject.file("keystore.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
 }
 
 android {
@@ -15,12 +23,24 @@ android {
         // Android 12: Material You dynamic colors and the BLUETOOTH_SCAN/CONNECT permission model.
         minSdk = 31
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.1.1"
+    }
+
+    signingConfigs {
+        if (!keystoreProperties.isEmpty) {
+            create("release") {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
